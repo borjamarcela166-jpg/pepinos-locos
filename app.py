@@ -31,6 +31,9 @@ def crear_base_datos():
     conexion.close()
 
 
+crear_base_datos()
+
+
 @app.route("/")
 def inicio():
     return render_template("inicio.html")
@@ -46,14 +49,13 @@ def menu():
     nombre = request.form["nombre"]
 
     return render_template(
-        "cliente.html",
+        "index.html",
         nombre=nombre
     )
 
 
 @app.route("/pedido", methods=["POST"])
 def pedido():
-
     nombre = request.form["nombre"]
     producto = request.form["producto"]
     cantidad = int(request.form["cantidad"])
@@ -105,11 +107,10 @@ def login():
             session["dueño"] = True
             return redirect(url_for("admin"))
 
-        else:
-            return render_template(
-                "login.html",
-                error="Usuario o contraseña incorrectos"
-            )
+        return render_template(
+            "login.html",
+            error="Usuario o contraseña incorrectos"
+        )
 
     return render_template("login.html")
 
@@ -237,8 +238,6 @@ def logout():
 
 
 if __name__ == "__main__":
-    crear_base_datos()
-
     app.run(
         host="0.0.0.0",
         port=int(os.environ.get("PORT", 5000))
