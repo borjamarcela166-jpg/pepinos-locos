@@ -1,1 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
 
+<head>
+    <meta charset="UTF-8">
+    <title>Pepinos Locos</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+
+<body>
+
+    <h1>🥒 PEPINOS LOCOS 🥒</h1>
+
+    <a href="{{ url_for('menu_cliente') }}">
+        <button type="button">
+            CLIENTE
+        </button>
+    </a>
+
+    <a href="{{ url_for('login') }}">
+        <button type="button">
+            ADMINISTRADOR
+        </button>
+    </a>
+
+</body>
+
+</html>
