@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Panel del dueño</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+
+<body>
+
+    <h1>🥒 PEPINOS LOCOS 🥒</h1>
+
+    <h2>👑 Panel del dueño</h2>
+
+    <a href="{{ url_for('logout') }}">
+        <button type="button">🚪 Cerrar sesión</button>
+    </a>
+
+    <h3>Pedidos recibidos</h3>
+
+    {% if pedidos %}
+
+        {% for pedido in pedidos %}
+
+            <div class="producto">
+
+                <h3>Pedido #{{ pedido["numero"] }}</h3>
+
+                <p>
+                    <b>Cliente:</b>
+                    {{ pedido["nombre"] }}
+                </p>
+
+                <p>
+                    <b>Producto:</b>
+                    {{ pedido["producto"] }}
+                </p>
+
+                <p>
+                    <b>Cantidad:</b>
+                    {{ pedido["cantidad"] }}
+                </p>
+
+                <p>
+                    <b>Total:</b>
+                    ${{ "%.2f"|format(pedido["total"]) }}
+                </p>
+
+                {% if pedido["confirmado"] == 1 %}
+
+                    <p>✅ Pedido confirmado</p>
+
+                    <a href="{{ url_for('factura', numero=pedido['numero'], origen='admin') }}">
+                        <button type="button">
+                            🧾 Mostrar factura
+                        </button>
+                    </a>
+
+                {% else %}
+
+                    <form
+                        action="{{ url_for('confirmar', numero=pedido['numero']) }}"
+                        method="POST"
+                    >
+
+                        <button type="submit">
+                            ✅ Confirmar pedido
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+                <form
+                    action="{{ url_for('eliminar', numero=pedido['numero']) }}"
+                    method="POST"
+                >
+
+                    <button type="submit">
+                        🗑️ Eliminar pedido
+                    </button>
+
+                </form>
+
+            </div>
+
+            <br>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No hay pedidos todavía.</p>
+
+    {% endif %}
+
+</body>
+
+</html>

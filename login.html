@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Login - Pepinos Locos</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+
+<body>
+
+    <h1> Pepinos Locos </h1>
+
+    <h2> Acceso del dueño</h2>
+
+    <form action="{{ url_for('login') }}" method="POST">
+
+        <label>Usuario:</label>
+
+        <br>
+
+        <input
+            type="text"
+            name="usuario"
+            placeholder="Usuario"
+            required
+        >
+
+        <br><br>
+
+        <label>Contraseña:</label>
+
+        <br>
+
+        <input
+            type="password"
+            name="contraseña"
+            placeholder="Contraseña"
+            required
+        >
+
+        <br><br>
+
+        <button type="submit">
+            Iniciar sesión
+        </button>
+
+    </form>
+
+    {% if error %}
+
+        <p>{{ error }}</p>
+
+    {% endif %}
+
+</body>
+
+</html>

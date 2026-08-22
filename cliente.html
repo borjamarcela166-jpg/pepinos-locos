@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cliente - Pepinos Locos</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+
+<body>
+
+    <h1>🥒 PEPINOS LOCOS 🥒</h1>
+
+    <h2>🛒 Área del cliente</h2>
+
+    <p>Ingresa tu nombre para comenzar tu pedido.</p>
+
+    <form action="{{ url_for('menu') }}" method="POST">
+
+        <label>Tu nombre:</label>
+
+        <br>
+
+        <input
+            type="text"
+            name="nombre"
+            placeholder="Escribe tu nombre"
+            required
+        >
+
+        <br><br>
+
+        <button type="submit">
+            🛒 Continuar
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="{{ url_for('inicio') }}">
+        <button type="button">
+            🏠 Volver al inicio
+        </button>
+
+    </a>
+
+</body>
+
+</html>

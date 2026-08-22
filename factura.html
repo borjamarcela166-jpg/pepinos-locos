@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Factura - Pepinos Locos</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+
+<body>
+
+    <h1>🥒 PEPINOS LOCOS 🥒</h1>
+
+    <h2>🧾 FACTURA</h2>
+
+    <div class="producto">
+
+        <h3>Pedido #{{ pedido["numero"] }}</h3>
+
+        <p>
+            <b>Cliente:</b>
+            {{ pedido["nombre"] }}
+        </p>
+
+        <p>
+            <b>Producto:</b>
+            {{ pedido["producto"] }}
+        </p>
+
+        <p>
+            <b>Cantidad:</b>
+            {{ pedido["cantidad"] }}
+        </p>
+
+        <p>
+            <b>Total:</b>
+            ${{ "%.2f"|format(pedido["total"]) }}
+        </p>
+
+        {% if pedido["confirmado"] == 1 %}
+            <p>✅ Pedido confirmado</p>
+        {% else %}
+            <p>⏳ Pedido pendiente</p>
+        {% endif %}
+
+        <br>
+
+        {% if origen == "admin" %}
+
+            <a href="{{ url_for('admin') }}">
+                <button type="button">
+                    👑 Volver a pedidos
+                </button>
+            </a>
+
+        {% else %}
+
+            <a href="{{ url_for('inicio') }}">
+                <button type="button">
+                    🏠 Volver al inicio
+                </button>
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>

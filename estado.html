@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Estado del pedido</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+
+<body>
+
+    <h1>Pepinos Locos </h1>
+
+    <div class="producto">
+
+        <h2>Pedido #{{ pedido.numero }}</h2>
+
+        <p>Cliente: {{ pedido.nombre }}</p>
+
+        <p>Producto: {{ pedido.producto }}</p>
+
+        <p>Cantidad: {{ pedido.cantidad }}</p>
+
+        <p>Total: ${{ pedido.total }}</p>
+
+        {% if pedido.confirmado %}
+
+            <h3> Pedido confirmado</h3>
+
+            <a href="{{ url_for('factura', numero=pedido.numero - 1) }}">
+                <button> Ver factura</button>
+            </a>
+
+        {% else %}
+
+            <h3>Pedido pendiente</h3>
+
+            <p>Estamos esperando la confirmación del dueño.</p>
+
+        {% endif %}
+
+        <br><br>
+
+        <a href="{{ url_for('consulta') }}">
+            <button> Consultar nuevamente</button>
+        </a>
+
+    </div>
+
+</body>
+
+</html>
