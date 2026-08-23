@@ -10,9 +10,9 @@
 
 <body>
 
-    <h1>🥒 PEPINOS LOCOS 🥒</h1>
+    <h1> PEPINOS LOCOS </h1>
 
-    <h2>🧾 FACTURA</h2>
+    <h2>FACTURA</h2>
 
     <div class="producto">
 
@@ -39,7 +39,7 @@
         </p>
 
         {% if pedido["confirmado"] == 1 %}
-            <p>✅ Pedido confirmado</p>
+            <p> Pedido confirmado</p>
         {% else %}
             <p>⏳ Pedido pendiente</p>
         {% endif %}
@@ -50,7 +50,7 @@
 
             <a href="{{ url_for('admin') }}">
                 <button type="button">
-                    👑 Volver a pedidos
+                    Volver a pedidos
                 </button>
             </a>
 
@@ -58,7 +58,7 @@
 
             <a href="{{ url_for('inicio') }}">
                 <button type="button">
-                    🏠 Volver al inicio
+                     Volver al inicio
                 </button>
             </a>
 
