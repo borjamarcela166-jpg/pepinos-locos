@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 
@@ -10,15 +11,14 @@
 
 <body>
 
-    <h1> PEPINOS LOCOS </h1>
+    <h1>PEPINOS LOCOS</h1>
 
-    <h2>Hola {{ nombre }} </h2>
+    <h2>Hola {{ nombre }}</h2>
 
     <h2>Haz tu pedido</h2>
 
-    <form action="/pedido" method="POST">
+    <form action="{{ url_for('pedido') }}" method="POST">
 
-        <!-- Guardamos el nombre del cliente -->
         <input type="hidden" name="nombre" value="{{ nombre }}">
 
         <div class="productos">
@@ -31,15 +31,16 @@
 
                 <p>$0.50</p>
 
-                <input type="radio"
-                       name="producto"
-                       value="Pepino Loco"
-                       required>
+                <input
+                    type="radio"
+                    name="producto"
+                    value="Pepino Loco"
+                    required
+                >
 
                 Elegir
 
             </div>
-
 
             <div class="producto">
 
@@ -49,9 +50,11 @@
 
                 <p>$0.75</p>
 
-                <input type="radio"
-                       name="producto"
-                       value="Pepino Loco con Gomitas">
+                <input
+                    type="radio"
+                    name="producto"
+                    value="Pepino Loco con Gomitas"
+                >
 
                 Elegir
 
@@ -61,20 +64,35 @@
 
         <br>
 
-        <label>Cantidad:</label>
+        <label for="cantidad">Cantidad:</label>
 
-        <input type="number"
-               name="cantidad"
-               min="1"
-               value="1"
-               required>
+        <input
+            type="number"
+            id="cantidad"
+            name="cantidad"
+            min="1"
+            value="1"
+            required
+        >
 
         <br><br>
 
-        <button type="submit">Hacer pedido</button>
+        <button type="submit">
+            Hacer pedido
+        </button>
 
     </form>
+
+    <br>
+
+    <a href="{{ url_for('inicio') }}">
+        <button type="button">
+            Volver al inicio
+        </button>
+    </a>
 
 </body>
 
 </html>
+```
+
