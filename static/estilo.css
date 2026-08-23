@@ -1,93 +1,33 @@
-* {
-    box-sizing: border-box;
-}
-
 body {
     margin: 0;
     padding: 30px;
     font-family: Arial, sans-serif;
     text-align: center;
-    background-color: #f5f5f5;
+    background: #f5f5f5;
 }
 
 h1 {
-    font-size: 40px;
-    margin: 20px 0;
-}
-
-h2 {
-    font-size: 28px;
-}
-
-h3 {
-    font-size: 22px;
-}
-
-p {
-    font-size: 18px;
+    color: green;
+    font-size: 50px;
+    margin: 30px;
 }
 
 button {
-    padding: 12px 25px;
+    padding: 15px 30px;
     margin: 10px;
-    font-size: 16px;
+    font-size: 18px;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
 }
 
-.productos {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    flex-wrap: wrap;
-}
-
-.producto {
-    background: white;
-    padding: 20px;
-    width: 300px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-
-.producto img {
-    width: 100%;
-    max-width: 250px;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-input {
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-}
-
 @media (max-width: 600px) {
-
     body {
-        padding: 15px 10px;
+        padding: 20px 10px;
     }
 
     h1 {
-        font-size: 30px;
-    }
-
-    h2 {
-        font-size: 22px;
-    }
-
-    .productos {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .producto {
-        width: 95%;
-        max-width: 350px;
+        font-size: 35px;
     }
 
     button {
