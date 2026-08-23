@@ -10,12 +10,12 @@
 
 <body>
 
-    <h1>🥒 PEPINOS LOCOS 🥒</h1>
+    <h1>PEPINOS LOCOS </h1>
 
-    <h2>👑 Panel del dueño</h2>
+    <h2>Panel del dueño</h2>
 
     <a href="{{ url_for('logout') }}">
-        <button type="button">🚪 Cerrar sesión</button>
+        <button type="button">Cerrar sesión</button>
     </a>
 
     <h3>Pedidos recibidos</h3>
@@ -50,11 +50,11 @@
 
                 {% if pedido["confirmado"] == 1 %}
 
-                    <p>✅ Pedido confirmado</p>
+                    <p> Pedido confirmado</p>
 
                     <a href="{{ url_for('factura', numero=pedido['numero'], origen='admin') }}">
                         <button type="button">
-                            🧾 Mostrar factura
+                             Mostrar factura
                         </button>
                     </a>
 
@@ -66,7 +66,7 @@
                     >
 
                         <button type="submit">
-                            ✅ Confirmar pedido
+                             Confirmar pedido
                         </button>
 
                     </form>
@@ -79,7 +79,7 @@
                 >
 
                     <button type="submit">
-                        🗑️ Eliminar pedido
+                         Eliminar pedido
                     </button>
 
                 </form>
