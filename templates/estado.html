@@ -10,40 +10,64 @@
 
 <body>
 
-    <h1>Pepinos Locos </h1>
+    <h1>Estado de tu pedido</h1>
 
     <div class="producto">
 
         <h2>Pedido #{{ pedido.numero }}</h2>
 
-        <p>Cliente: {{ pedido.nombre }}</p>
+        <p>
+            <b>Nombre:</b>
+            {{ pedido.nombre }}
+        </p>
 
-        <p>Producto: {{ pedido.producto }}</p>
+        <p>
+            <b>Producto:</b>
+            {{ pedido.producto }}
+        </p>
 
-        <p>Cantidad: {{ pedido.cantidad }}</p>
+        <p>
+            <b>Cantidad:</b>
+            {{ pedido.cantidad }}
+        </p>
 
-        <p>Total: ${{ pedido.total }}</p>
+        <p>
+            <b>Total:</b>
+            ${{ pedido.total }}
+        </p>
 
-        {% if pedido.confirmado %}
+        {% if pedido.confirmado == 1 %}
 
-            <h3> Pedido confirmado</h3>
+            <p>
+                Pedido confirmado.
+            </p>
 
-            <a href="{{ url_for('factura', numero=pedido.numero - 1) }}">
-                <button> Ver factura</button>
+            <a href="{{ url_for('factura', numero=pedido.numero, origen='cliente') }}">
+                <button type="button">
+                    Ver factura
+                </button>
             </a>
 
         {% else %}
 
-            <h3>Pedido pendiente</h3>
-
-            <p>Estamos esperando la confirmación del dueño.</p>
+            <p>
+                Tu pedido está pendiente de confirmación.
+            </p>
 
         {% endif %}
 
         <br><br>
 
         <a href="{{ url_for('consulta') }}">
-            <button> Consultar nuevamente</button>
+            <button type="button">
+                Consultar otro pedido
+            </button>
+        </a>
+
+        <a href="{{ url_for('inicio') }}">
+            <button type="button">
+                Volver al inicio
+            </button>
         </a>
 
     </div>
