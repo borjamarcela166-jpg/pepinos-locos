@@ -2,50 +2,160 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cliente - Pepinos Locos</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Área del cliente - Pepinos Locos</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='estilo.css') }}"
+    >
+
 </head>
+
 
 <body>
 
-    <h1> PEPINOS LOCOS </h1>
 
-    <h2> Área del cliente</h2>
+    <!-- BARRA DE NAVEGACIÓN -->
 
-    <p>Ingresa tu nombre para comenzar tu pedido.</p>
+    <header class="barra">
 
-    <form action="{{ url_for('menu') }}" method="POST">
+        <div class="logo">
+            PEPINOS LOCOS
+        </div>
 
-        <label>Tu nombre:</label>
 
-        <br>
+        <nav>
 
-        <input
-            type="text"
-            name="nombre"
-            placeholder="Escribe tu nombre"
-            required
-        >
+            <a href="{{ url_for('inicio') }}">
+                Inicio
+            </a>
 
-        <br><br>
+            <a href="{{ url_for('menu_cliente') }}">
+                Productos
+            </a>
 
-        <button type="submit">
-            Continuar
-        </button>
+            <a href="{{ url_for('consulta') }}">
+                Consultar pedido
+            </a>
 
-    </form>
+            <a href="{{ url_for('login') }}">
+                Dueño
+            </a>
 
-    <br>
+        </nav>
 
-    <a href="{{ url_for('inicio') }}">
-        <button type="button">
-             Volver al inicio
-        </button>
+    </header>
 
-    </a>
+
+
+    <!-- ÁREA DEL CLIENTE -->
+
+    <main class="contenido-pagina">
+
+        <div class="tarjeta-formulario">
+
+            <p class="pequeno">
+                ÁREA DEL CLIENTE
+            </p>
+
+
+            <h1>
+                Haz tu pedido
+            </h1>
+
+
+            <p class="texto-formulario">
+
+                Ingresa tus datos para realizar
+                tu pedido y recibir tu factura.
+
+            </p>
+
+
+            <form
+                action="{{ url_for('menu') }}"
+                method="POST"
+            >
+
+
+                <label for="nombre">
+                    Tu nombre
+                </label>
+
+
+                <input
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    placeholder="Escribe tu nombre"
+                    required
+                >
+
+
+                <label for="telefono">
+                    Número de WhatsApp
+                </label>
+
+
+                <input
+                    type="tel"
+                    id="telefono"
+                    name="telefono"
+                    placeholder="Ejemplo: 70000000"
+                    maxlength="8"
+                    pattern="[0-9]{8}"
+                    required
+                >
+
+
+                <small>
+                    Escribe solamente los 8 números de tu teléfono.
+                </small>
+
+
+                <button type="submit">
+                    Continuar
+                </button>
+
+            </form>
+
+
+            <a
+                href="{{ url_for('inicio') }}"
+                class="boton-secundario"
+            >
+                Volver al inicio
+            </a>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- PIE DE PÁGINA -->
+
+    <footer>
+
+        <h3>
+            PEPINOS LOCOS
+        </h3>
+
+        <p>
+            Gracias por elegirnos.
+        </p>
+
+        <p class="copyright">
+            © 2026 Pepinos Locos
+        </p>
+
+    </footer>
+
 
 </body>
 
