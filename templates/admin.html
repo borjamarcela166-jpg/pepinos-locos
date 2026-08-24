@@ -2,100 +2,243 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel del dueño</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Panel del dueño - Pepinos Locos</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='estilo.css') }}"
+    >
+
 </head>
+
 
 <body>
 
-    <h1>PEPINOS LOCOS </h1>
 
-    <h2>Panel del dueño</h2>
+    <!-- BARRA DE NAVEGACIÓN -->
 
-    <a href="{{ url_for('logout') }}">
-        <button type="button">Cerrar sesión</button>
-    </a>
+    <header class="barra">
 
-    <h3>Pedidos recibidos</h3>
+        <div class="logo">
+            PEPINOS LOCOS
+        </div>
 
-    {% if pedidos %}
+        <nav>
 
-        {% for pedido in pedidos %}
+            <a href="{{ url_for('inicio') }}">
+                Inicio
+            </a>
 
-            <div class="producto">
+            <a href="{{ url_for('menu_cliente') }}">
+                Productos
+            </a>
 
-                <h3>Pedido #{{ pedido["numero"] }}</h3>
+            <a href="{{ url_for('consulta') }}">
+                Consultar pedido
+            </a>
 
-                <p>
-                    <b>Cliente:</b>
-                    {{ pedido["nombre"] }}
-                </p>
+            <a href="{{ url_for('logout') }}">
+                Cerrar sesión
+            </a>
 
-                <p>
-                    <b>Producto:</b>
-                    {{ pedido["producto"] }}
-                </p>
+        </nav>
 
-                <p>
-                    <b>Cantidad:</b>
-                    {{ pedido["cantidad"] }}
-                </p>
+    </header>
 
-                <p>
-                    <b>Total:</b>
-                    ${{ "%.2f"|format(pedido["total"]) }}
-                </p>
 
-                {% if pedido["confirmado"] == 1 %}
 
-                    <p> Pedido confirmado</p>
+    <!-- PANEL DEL DUEÑO -->
 
-                    <a href="{{ url_for('factura', numero=pedido['numero'], origen='admin') }}">
-                        <button type="button">
-                             Mostrar factura
-                        </button>
-                    </a>
+    <main class="contenido-pagina">
 
-                {% else %}
+        <div class="tarjeta-formulario">
+
+            <p class="pequeno">
+                PANEL DEL DUEÑO
+            </p>
+
+            <h1>
+                Pedidos recibidos
+            </h1>
+
+        </div>
+
+
+        {% if pedidos %}
+
+
+            {% for pedido in pedidos %}
+
+
+                <div class="producto">
+
+                    <h2>
+                        Pedido #{{ pedido["numero"] }}
+                    </h2>
+
+
+                    <p>
+                        <b>Cliente:</b>
+                        {{ pedido["nombre"] }}
+                    </p>
+
+
+                    <p>
+                        <b>Teléfono:</b>
+                        {{ pedido["telefono"] }}
+                    </p>
+
+
+                    <p>
+                        <b>Producto:</b>
+                        {{ pedido["producto"] }}
+                    </p>
+
+
+                    <p>
+                        <b>Cantidad:</b>
+                        {{ pedido["cantidad"] }}
+                    </p>
+
+
+                    <p>
+                        <b>Total:</b>
+                        ${{ "%.2f"|format(pedido["total"]) }}
+                    </p>
+
+
+
+                    {% if pedido["confirmado"] == 1 %}
+
+
+                        <p class="confirmado">
+                            Pedido confirmado
+                        </p>
+
+
+                        <a
+                            href="{{ url_for(
+                                'factura',
+                                numero=pedido['numero'],
+                                origen='admin'
+                            ) }}"
+                        >
+
+                            <button type="button">
+                                Mostrar factura
+                            </button>
+
+                        </a>
+
+
+                        <br><br>
+
+
+                        <a
+                            href="{{ url_for(
+                                'factura',
+                                numero=pedido['numero'],
+                                origen='admin'
+                            ) }}"
+                        >
+
+                            <button type="button">
+                                Enviar factura por WhatsApp
+                            </button>
+
+                        </a>
+
+
+                    {% else %}
+
+
+                        <p class="pendiente">
+                            Pedido pendiente de confirmación
+                        </p>
+
+
+                        <form
+                            action="{{ url_for(
+                                'confirmar',
+                                numero=pedido['numero']
+                            ) }}"
+                            method="POST"
+                        >
+
+                            <button type="submit">
+                                Confirmar pedido
+                            </button>
+
+                        </form>
+
+
+                    {% endif %}
+
+
 
                     <form
-                        action="{{ url_for('confirmar', numero=pedido['numero']) }}"
+                        action="{{ url_for(
+                            'eliminar',
+                            numero=pedido['numero']
+                        ) }}"
                         method="POST"
                     >
 
                         <button type="submit">
-                             Confirmar pedido
+                            Eliminar pedido
                         </button>
 
                     </form>
 
-                {% endif %}
 
-                <form
-                    action="{{ url_for('eliminar', numero=pedido['numero']) }}"
-                    method="POST"
-                >
+                </div>
 
-                    <button type="submit">
-                         Eliminar pedido
-                    </button>
 
-                </form>
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <div class="producto">
+
+                <h3>
+                    No hay pedidos todavía.
+                </h3>
 
             </div>
 
-            <br>
 
-        {% endfor %}
+        {% endif %}
 
-    {% else %}
+    </main>
 
-        <p>No hay pedidos todavía.</p>
 
-    {% endif %}
+
+    <footer>
+
+        <h3>
+            PEPINOS LOCOS
+        </h3>
+
+        <p>
+            Panel administrativo
+        </p>
+
+        <p class="copyright">
+            © 2026 Pepinos Locos
+        </p>
+
+    </footer>
+
 
 </body>
 
