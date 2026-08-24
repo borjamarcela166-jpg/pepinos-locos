@@ -2,70 +2,264 @@
 <html lang="es">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Factura - Pepinos Locos</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='estilo.css') }}"
+    >
+
 </head>
 
-<body>
 
-    <h1> PEPINOS LOCOS </h1>
+<body class="factura-body">
 
-    <h2>FACTURA</h2>
 
-    <div class="producto">
+    <div class="factura">
 
-        <h3>Pedido #{{ pedido["numero"] }}</h3>
 
-        <p>
-            <b>Cliente:</b>
-            {{ pedido["nombre"] }}
-        </p>
+        <!-- ENCABEZADO -->
 
-        <p>
-            <b>Producto:</b>
-            {{ pedido["producto"] }}
-        </p>
+        <div class="factura-encabezado">
 
-        <p>
-            <b>Cantidad:</b>
-            {{ pedido["cantidad"] }}
-        </p>
+            <h1>
+                PEPINOS LOCOS
+            </h1>
 
-        <p>
-            <b>Total:</b>
-            ${{ "%.2f"|format(pedido["total"]) }}
-        </p>
+            <p>
+                Factura de compra
+            </p>
 
-        {% if pedido["confirmado"] == 1 %}
-            <p> Pedido confirmado</p>
-        {% else %}
-            <p>⏳ Pedido pendiente</p>
-        {% endif %}
+        </div>
 
-        <br>
 
-        {% if origen == "admin" %}
 
-            <a href="{{ url_for('admin') }}">
-                <button type="button">
-                    Volver a pedidos
-                </button>
-            </a>
+        <!-- INFORMACIÓN DEL PEDIDO -->
 
-        {% else %}
+        <div class="factura-info">
 
-            <a href="{{ url_for('inicio') }}">
-                <button type="button">
-                     Volver al inicio
-                </button>
-            </a>
 
-        {% endif %}
+            <div>
+
+                <span>
+                    Pedido
+                </span>
+
+                <strong>
+                    #{{ pedido["numero"] }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Estado
+                </span>
+
+
+                {% if pedido["confirmado"] == 1 %}
+
+                    <strong class="confirmado">
+                        Confirmado
+                    </strong>
+
+                {% else %}
+
+                    <strong class="pendiente">
+                        Pendiente
+                    </strong>
+
+                {% endif %}
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="linea"></div>
+
+
+
+        <!-- DATOS DEL CLIENTE -->
+
+        <h2>
+            Datos del cliente
+        </h2>
+
+
+        <div class="datos">
+
+            <p>
+
+                <b>
+                    Cliente:
+                </b>
+
+                {{ pedido["nombre"] }}
+
+            </p>
+
+
+            <p>
+
+                <b>
+                    Teléfono:
+                </b>
+
+                {{ pedido["telefono"] }}
+
+            </p>
+
+        </div>
+
+
+
+        <!-- DETALLE -->
+
+        <h2>
+            Detalle del pedido
+        </h2>
+
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Producto
+                    </th>
+
+                    <th>
+                        Cantidad
+                    </th>
+
+                    <th>
+                        Total
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+                        {{ pedido["producto"] }}
+                    </td>
+
+                    <td>
+                        {{ pedido["cantidad"] }}
+                    </td>
+
+                    <td>
+                        ${{ "%.2f"|format(pedido["total"]) }}
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+
+
+        <!-- TOTAL -->
+
+        <div class="total">
+
+            <span>
+                TOTAL A PAGAR
+            </span>
+
+            <span>
+                ${{ "%.2f"|format(pedido["total"]) }}
+            </span>
+
+        </div>
+
+
+
+        <div class="agradecimiento">
+
+            Gracias por elegir Pepinos Locos.
+
+            <br>
+
+            Esperamos que disfrutes tu pedido.
+
+        </div>
+
+
+
+        <!-- BOTONES -->
+
+        <div class="botones">
+
+
+            {% if origen == "admin" %}
+
+
+                <a
+                    href="{{ enlace_whatsapp }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="boton-principal"
+                >
+
+                    Enviar factura por WhatsApp
+
+                </a>
+
+
+                <br><br>
+
+
+                <a href="{{ url_for('admin') }}">
+
+                    <button type="button">
+                        Volver a pedidos
+                    </button>
+
+                </a>
+
+
+            {% else %}
+
+
+                <a href="{{ url_for('inicio') }}">
+
+                    <button type="button">
+                        Volver al inicio
+                    </button>
+
+                </a>
+
+
+            {% endif %}
+
+
+        </div>
+
 
     </div>
+
 
 </body>
 
