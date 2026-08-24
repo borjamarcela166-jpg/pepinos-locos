@@ -8,25 +8,65 @@ app = Flask(__name__)
 app.secret_key = "pepinos_locos_123"
 
 
-# ==========================================
+# =========================================================
 # BASE DE DATOS
-# ==========================================
+# =========================================================
+
+# Usamos una ruta fija dentro del proyecto
+BASE_DATOS = os.path.join(app.root_path, "pepinos.db")
+
 
 def conectar():
-    conexion = sqlite3.connect("pepinos.db")
+    conexion = sqlite3.connect(BASE_DATOS)
     conexion.row_factory = sqlite3.Row
     return conexion
 
+
+# =========================================================
+# PREPARAR TELÉFONO
+# =========================================================
+
+def preparar_telefono(telefono):
+
+    if not telefono:
+        return None
+
+    telefono = str(telefono).strip()
+
+    # Dejar solamente números
+    telefono = "".join(
+        caracter
+        for caracter in telefono
+        if caracter.isdigit()
+    )
+
+    # Deben ser exactamente 8 números
+    if len(telefono) != 8:
+        return None
+
+    # El Salvador: números móviles empiezan normalmente
+    # con 6, 7, 8 o 9
+    if telefono[0] not in "6789":
+        return None
+
+    # Código de país de El Salvador
+    return "503" + telefono
+
+
+# =========================================================
+# CREAR BASE DE DATOS
+# =========================================================
 
 def crear_base_datos():
 
     conexion = conectar()
 
+    # Crear tabla si no existe
     conexion.execute("""
         CREATE TABLE IF NOT EXISTS pedidos (
             numero INTEGER PRIMARY KEY AUTOINCREMENT,
             nombre TEXT NOT NULL,
-            telefono TEXT NOT NULL,
+            telefono TEXT NOT NULL DEFAULT '',
             producto TEXT NOT NULL,
             cantidad INTEGER NOT NULL,
             total REAL NOT NULL,
@@ -34,77 +74,84 @@ def crear_base_datos():
         )
     """)
 
+    # Revisar columnas existentes
     columnas = conexion.execute(
         "PRAGMA table_info(pedidos)"
     ).fetchall()
 
-    nombres = [columna["name"] for columna in columnas]
+    nombres_columnas = [
+        columna["name"]
+        for columna in columnas
+    ]
 
-    if "telefono" not in nombres:
+    # Si la base de datos vieja no tiene teléfono,
+    # agregarlo
+    if "telefono" not in nombres_columnas:
+
         conexion.execute("""
             ALTER TABLE pedidos
             ADD COLUMN telefono TEXT DEFAULT ''
         """)
 
+    # Si por alguna razón no existe confirmado
+    if "confirmado" not in nombres_columnas:
+
+        conexion.execute("""
+            ALTER TABLE pedidos
+            ADD COLUMN confirmado INTEGER DEFAULT 0
+        """)
+
     conexion.commit()
     conexion.close()
 
-
-# ==========================================
-# TELÉFONO
-# ==========================================
-
-def preparar_telefono(telefono):
-
-    if telefono is None:
-        return None
-
-    telefono = str(telefono).strip()
-
-    # Solamente números
-    telefono = "".join(
-        caracter for caracter in telefono
-        if caracter.isdigit()
-    )
-
-    # Deben ser exactamente 8
-    if len(telefono) != 8:
-        return None
-
-    # Números móviles de El Salvador
-    if telefono[0] not in "6789":
-        return None
-
-    # Código de El Salvador
-    return "503" + telefono
+    print("================================")
+    print("BASE DE DATOS LISTA")
+    print("UBICACIÓN:", BASE_DATOS)
+    print("================================")
 
 
-# ==========================================
+# =========================================================
+# IMPORTANTE PARA RENDER
+# =========================================================
+#
+# Esto se ejecuta cuando Gunicorn importa app.py.
+# NO debe estar solamente dentro de if __name__ == "__main__".
+#
+
+crear_base_datos()
+
+
+# =========================================================
 # INICIO
-# ==========================================
+# =========================================================
 
 @app.route("/")
 def inicio():
+
     return render_template("inicio.html")
 
 
-# ==========================================
-# CLIENTE
-# ==========================================
+# =========================================================
+# ÁREA DEL CLIENTE
+# =========================================================
 
 @app.route("/cliente")
 def menu_cliente():
+
     return render_template("cliente.html")
 
 
-# ==========================================
-# RECIBIR DATOS DEL CLIENTE
-# ==========================================
+# =========================================================
+# RECIBIR NOMBRE Y TELÉFONO
+# =========================================================
 
 @app.route("/menu", methods=["POST"])
 def menu():
 
-    nombre = request.form.get("nombre", "").strip()
+    nombre = request.form.get(
+        "nombre",
+        ""
+    ).strip()
 
     telefono_original = request.form.get(
         "telefono",
@@ -113,11 +160,16 @@ def menu():
 
     print("================================")
     print("TELEFONO RECIBIDO:", repr(telefono_original))
-    print("CANTIDAD:", len(telefono_original))
+    print("CANTIDAD DE CARACTERES:", len(telefono_original))
     print("================================")
 
-    telefono = preparar_telefono(telefono_original)
+    telefono = preparar_telefono(
+        telefono_original
+    )
 
+    print("TELEFONO PREPARADO:", repr(telefono))
+
+    # Comprobar teléfono
     if telefono is None:
 
         return render_template(
@@ -125,6 +177,7 @@ def menu():
             error="Debes escribir exactamente 8 números. Ejemplo: 78451234."
         )
 
+    # Mostrar menú
     return render_template(
         "index.html",
         nombre=nombre,
@@ -132,9 +185,9 @@ def menu():
     )
 
 
-# ==========================================
+# =========================================================
 # CREAR PEDIDO
-# ==========================================
+# =========================================================
 
 @app.route("/pedido", methods=["POST"])
 def pedido():
@@ -144,7 +197,7 @@ def pedido():
         ""
     ).strip()
 
-    telefono = request.form.get(
+    telefono_original = request.form.get(
         "telefono",
         ""
     ).strip()
@@ -154,64 +207,45 @@ def pedido():
         ""
     ).strip()
 
-    cantidad_texto = request.form.get(
-        "cantidad",
-        "1"
-    )
-
     try:
-        cantidad = int(cantidad_texto)
-    except (ValueError, TypeError):
-        cantidad = 1
 
-    # IMPORTANTE:
-    # El teléfono que viene del index puede ser 503XXXXXXXX
-    # o puede ser solamente XXXXXXXX.
-
-    telefono_limpio = "".join(
-        caracter
-        for caracter in telefono
-        if caracter.isdigit()
-    )
-
-    if len(telefono_limpio) == 11 and telefono_limpio.startswith("503"):
-
-        telefono = telefono_limpio
-
-    else:
-
-        telefono = preparar_telefono(
-            telefono_limpio
+        cantidad = int(
+            request.form.get(
+                "cantidad",
+                1
+            )
         )
 
+    except (ValueError, TypeError):
+
+        cantidad = 1
+
+    # Evitar cantidades inválidas
+    if cantidad < 1:
+        cantidad = 1
+
+    # Preparar teléfono
+    telefono = preparar_telefono(
+        telefono_original
+    )
+
+    print("================================")
+    print("PEDIDO RECIBIDO")
+    print("NOMBRE:", nombre)
+    print("TELEFONO:", telefono)
+    print("PRODUCTO:", producto)
+    print("CANTIDAD:", cantidad)
+    print("================================")
+
+    # Comprobar teléfono
     if telefono is None:
 
         return render_template(
             "cliente.html",
-            error="El teléfono no es válido."
+            error="Debes escribir exactamente 8 números. Ejemplo: 78451234."
         )
 
-    if not nombre:
-        return render_template(
-            "cliente.html",
-            error="Debes escribir tu nombre."
-        )
-
-    if not producto:
-        return render_template(
-            "index.html",
-            nombre=nombre,
-            telefono=telefono,
-            error="Debes seleccionar un producto."
-        )
-
-    if cantidad < 1:
-        cantidad = 1
-
-    # ======================================
-    # PRECIOS
-    # ======================================
-
+    # Comprobar producto
     if producto == "Pepino Loco":
 
         precio = 0.50
@@ -222,23 +256,18 @@ def pedido():
 
     else:
 
-        return render_template(
-            "index.html",
-            nombre=nombre,
-            telefono=telefono,
-            error="Producto no válido."
-        )
+        return "Producto no válido", 400
 
+    # Calcular total
     total = cantidad * precio
 
-    # ======================================
-    # GUARDAR PEDIDO
-    # ======================================
+    # Asegurar que la tabla exista
+    crear_base_datos()
 
+    # Guardar pedido
     conexion = conectar()
 
-    cursor = conexion.execute(
-        """
+    cursor = conexion.execute("""
         INSERT INTO pedidos
         (
             nombre,
@@ -249,29 +278,38 @@ def pedido():
             confirmado
         )
         VALUES (?, ?, ?, ?, ?, ?)
-        """,
-        (
-            nombre,
-            telefono,
-            producto,
-            cantidad,
-            total,
-            0
-        )
-    )
+    """, (
+        nombre,
+        telefono,
+        producto,
+        cantidad,
+        total,
+        0
+    ))
 
     numero = cursor.lastrowid
 
     conexion.commit()
     conexion.close()
 
+    print("PEDIDO GUARDADO CORRECTAMENTE")
+    print("NUMERO DE PEDIDO:", numero)
+
+    # Información del pedido
     pedido_nuevo = {
+
         "numero": numero,
+
         "nombre": nombre,
+
         "telefono": telefono,
+
         "producto": producto,
+
         "cantidad": cantidad,
+
         "total": total,
+
         "confirmado": 0
     }
 
@@ -281,9 +319,9 @@ def pedido():
     )
 
 
-# ==========================================
-# LOGIN
-# ==========================================
+# =========================================================
+# LOGIN DEL DUEÑO
+# =========================================================
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -300,7 +338,10 @@ def login():
             ""
         )
 
-        if usuario == "pepinos" and contraseña == "505":
+        if (
+            usuario == "pepinos"
+            and contraseña == "505"
+        ):
 
             session["dueño"] = True
 
@@ -313,28 +354,33 @@ def login():
             error="Usuario o contraseña incorrectos"
         )
 
-    return render_template("login.html")
+    return render_template(
+        "login.html"
+    )
 
 
-# ==========================================
-# ADMIN
-# ==========================================
+# =========================================================
+# PANEL DEL DUEÑO
+# =========================================================
 
 @app.route("/admin")
 def admin():
 
     if "dueño" not in session:
-        return redirect(url_for("login"))
+
+        return redirect(
+            url_for("login")
+        )
+
+    crear_base_datos()
 
     conexion = conectar()
 
-    pedidos = conexion.execute(
-        """
+    pedidos = conexion.execute("""
         SELECT *
         FROM pedidos
         ORDER BY numero DESC
-        """
-    ).fetchall()
+    """).fetchall()
 
     conexion.close()
 
@@ -344,9 +390,9 @@ def admin():
     )
 
 
-# ==========================================
-# CONFIRMAR
-# ==========================================
+# =========================================================
+# CONFIRMAR PEDIDO
+# =========================================================
 
 @app.route(
     "/confirmar/<int:numero>",
@@ -355,28 +401,32 @@ def admin():
 def confirmar(numero):
 
     if "dueño" not in session:
-        return redirect(url_for("login"))
+
+        return redirect(
+            url_for("login")
+        )
 
     conexion = conectar()
 
-    conexion.execute(
-        """
+    conexion.execute("""
         UPDATE pedidos
         SET confirmado = 1
         WHERE numero = ?
-        """,
-        (numero,)
-    )
+    """, (
+        numero,
+    ))
 
     conexion.commit()
     conexion.close()
 
-    return redirect(url_for("admin"))
+    return redirect(
+        url_for("admin")
+    )
 
 
-# ==========================================
-# ELIMINAR
-# ==========================================
+# =========================================================
+# ELIMINAR PEDIDO
+# =========================================================
 
 @app.route(
     "/eliminar/<int:numero>",
@@ -385,27 +435,31 @@ def confirmar(numero):
 def eliminar(numero):
 
     if "dueño" not in session:
-        return redirect(url_for("login"))
+
+        return redirect(
+            url_for("login")
+        )
 
     conexion = conectar()
 
-    conexion.execute(
-        """
+    conexion.execute("""
         DELETE FROM pedidos
         WHERE numero = ?
-        """,
-        (numero,)
-    )
+    """, (
+        numero,
+    ))
 
     conexion.commit()
     conexion.close()
 
-    return redirect(url_for("admin"))
+    return redirect(
+        url_for("admin")
+    )
 
 
-# ==========================================
+# =========================================================
 # FACTURA
-# ==========================================
+# =========================================================
 
 @app.route("/factura/<int:numero>")
 def factura(numero):
@@ -417,18 +471,18 @@ def factura(numero):
 
     conexion = conectar()
 
-    pedido = conexion.execute(
-        """
+    pedido = conexion.execute("""
         SELECT *
         FROM pedidos
         WHERE numero = ?
-        """,
-        (numero,)
-    ).fetchone()
+    """, (
+        numero,
+    )).fetchone()
 
     conexion.close()
 
     if pedido is None:
+
         return "Pedido no encontrado"
 
     mensaje = (
@@ -447,7 +501,8 @@ def factura(numero):
         "--------------------------------\n\n"
         f"TOTAL A PAGAR: ${pedido['total']:.2f}\n\n"
         "================================\n"
-        "Gracias por comprar en Pepinos Locos."
+        "Gracias por comprar en Pepinos Locos.\n"
+        "Esperamos que disfrutes tu pedido."
     )
 
     enlace_whatsapp = (
@@ -463,36 +518,40 @@ def factura(numero):
     )
 
 
-# ==========================================
+# =========================================================
 # WHATSAPP
-# ==========================================
+# =========================================================
 
 @app.route("/whatsapp/<int:numero>")
 def whatsapp(numero):
 
     if "dueño" not in session:
-        return redirect(url_for("login"))
+
+        return redirect(
+            url_for("login")
+        )
 
     conexion = conectar()
 
-    pedido = conexion.execute(
-        """
+    pedido = conexion.execute("""
         SELECT *
         FROM pedidos
         WHERE numero = ?
-        """,
-        (numero,)
-    ).fetchone()
+    """, (
+        numero,
+    )).fetchone()
 
     conexion.close()
 
     if pedido is None:
+
         return "Pedido no encontrado"
 
     telefono = pedido["telefono"]
 
     if not telefono:
-        return "Este pedido no tiene teléfono."
+
+        return "Este pedido no tiene teléfono guardado."
 
     mensaje = (
         "PEPINOS LOCOS\n"
@@ -510,7 +569,8 @@ def whatsapp(numero):
         "--------------------------------\n\n"
         f"TOTAL A PAGAR: ${pedido['total']:.2f}\n\n"
         "================================\n"
-        "Gracias por comprar en Pepinos Locos."
+        "Gracias por comprar en Pepinos Locos.\n"
+        "Esperamos que disfrutes tu pedido."
     )
 
     enlace_whatsapp = (
@@ -518,17 +578,26 @@ def whatsapp(numero):
         f"?text={quote(mensaje)}"
     )
 
-    return redirect(enlace_whatsapp)
+    return redirect(
+        enlace_whatsapp
+    )
 
 
-# ==========================================
-# CONSULTA
-# ==========================================
+# =========================================================
+# CONSULTAR PEDIDO
+# =========================================================
 
 @app.route("/consulta")
 def consulta():
-    return render_template("consulta.html")
 
+    return render_template(
+        "consulta.html"
+    )
+
+
+# =========================================================
+# BUSCAR PEDIDO
+# =========================================================
 
 @app.route(
     "/consultar",
@@ -539,13 +608,10 @@ def consultar():
     try:
 
         numero = int(
-            request.form.get(
-                "numero",
-                ""
-            )
+            request.form["numero"]
         )
 
-    except (ValueError, TypeError):
+    except (ValueError, KeyError):
 
         return render_template(
             "consulta.html",
@@ -554,14 +620,13 @@ def consultar():
 
     conexion = conectar()
 
-    pedido = conexion.execute(
-        """
+    pedido = conexion.execute("""
         SELECT *
         FROM pedidos
         WHERE numero = ?
-        """,
-        (numero,)
-    ).fetchone()
+    """, (
+        numero,
+    )).fetchone()
 
     conexion.close()
 
@@ -578,9 +643,9 @@ def consultar():
     )
 
 
-# ==========================================
-# LOGOUT
-# ==========================================
+# =========================================================
+# CERRAR SESIÓN
+# =========================================================
 
 @app.route("/logout")
 def logout():
@@ -595,13 +660,11 @@ def logout():
     )
 
 
-# ==========================================
-# INICIAR
-# ==========================================
+# =========================================================
+# EJECUTAR LOCALMENTE
+# =========================================================
 
 if __name__ == "__main__":
-
-    crear_base_datos()
 
     puerto = int(
         os.environ.get(
@@ -613,5 +676,5 @@ if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=puerto,
-        debug=False
+        debug=True
     )
