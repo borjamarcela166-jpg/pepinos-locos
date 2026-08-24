@@ -123,10 +123,14 @@ def menu():
         ""
     ).strip()
 
-    telefono_original = request.form.get(
-        "telefono",
-        ""
-    ).strip()
+    telefono_original = request.form.get("telefono", "")
+
+print("================================")
+print("TELEFONO RECIBIDO:", repr(telefono_original))
+print("CANTIDAD DE CARACTERES:", len(telefono_original))
+print("================================")
+
+telefono = preparar_telefono(telefono_original)
 
     # Preparar teléfono
     telefono = preparar_telefono(
