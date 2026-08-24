@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -63,10 +64,8 @@
             </h1>
 
             <p class="texto-formulario">
-
                 Ingresa tus datos para realizar
                 tu pedido y recibir tu factura.
-
             </p>
 
 
@@ -93,18 +92,30 @@
                 </label>
 
                 <input
-                    type="tel"
+                    type="text"
                     id="telefono"
                     name="telefono"
-                    placeholder="Ejemplo: 70000000"
+                    placeholder="Ejemplo: 78451234"
                     maxlength="8"
+                    minlength="8"
                     pattern="[0-9]{8}"
+                    inputmode="numeric"
                     required
                 >
 
                 <small>
                     Escribe solamente los 8 números de tu teléfono.
+                    Ejemplo: 78451234
                 </small>
+
+
+                {% if error %}
+
+                <p style="color: red; margin-top: 10px;">
+                    {{ error }}
+                </p>
+
+                {% endif %}
 
 
                 <button type="submit">
