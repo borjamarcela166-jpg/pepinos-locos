@@ -2,76 +2,220 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estado del pedido</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Estado del pedido - Pepinos Locos</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='estilo.css') }}"
+    >
+
 </head>
+
 
 <body>
 
-    <h1>Estado de tu pedido</h1>
 
-    <div class="producto">
+    <!-- BARRA DE NAVEGACIÓN -->
 
-        <h2>Pedido #{{ pedido.numero }}</h2>
+    <header class="barra">
 
-        <p>
-            <b>Nombre:</b>
-            {{ pedido.nombre }}
-        </p>
+        <div class="logo">
+            PEPINOS LOCOS
+        </div>
 
-        <p>
-            <b>Producto:</b>
-            {{ pedido.producto }}
-        </p>
 
-        <p>
-            <b>Cantidad:</b>
-            {{ pedido.cantidad }}
-        </p>
+        <nav>
 
-        <p>
-            <b>Total:</b>
-            ${{ pedido.total }}
-        </p>
-
-        {% if pedido.confirmado == 1 %}
-
-            <p>
-                Pedido confirmado.
-            </p>
-
-            <a href="{{ url_for('factura', numero=pedido.numero, origen='cliente') }}">
-                <button type="button">
-                    Ver factura
-                </button>
+            <a href="{{ url_for('inicio') }}">
+                Inicio
             </a>
 
-        {% else %}
+            <a href="{{ url_for('menu_cliente') }}">
+                Productos
+            </a>
 
-            <p>
-                Tu pedido está pendiente de confirmación.
+            <a href="{{ url_for('consulta') }}">
+                Consultar pedido
+            </a>
+
+            <a href="{{ url_for('login') }}">
+                Dueño
+            </a>
+
+        </nav>
+
+    </header>
+
+
+
+    <!-- ESTADO DEL PEDIDO -->
+
+    <main class="contenido-pagina">
+
+
+        <div class="producto">
+
+
+            <p class="pequeno">
+                ESTADO DEL PEDIDO
             </p>
 
-        {% endif %}
 
-        <br><br>
+            <h2>
+                Pedido #{{ pedido["numero"] }}
+            </h2>
 
-        <a href="{{ url_for('consulta') }}">
-            <button type="button">
-                Consultar otro pedido
-            </button>
-        </a>
 
-        <a href="{{ url_for('inicio') }}">
-            <button type="button">
-                Volver al inicio
-            </button>
-        </a>
+            <br>
 
-    </div>
+
+            <p>
+
+                <b>
+                    Cliente:
+                </b>
+
+                {{ pedido["nombre"] }}
+
+            </p>
+
+
+            <p>
+
+                <b>
+                    Producto:
+                </b>
+
+                {{ pedido["producto"] }}
+
+            </p>
+
+
+            <p>
+
+                <b>
+                    Cantidad:
+                </b>
+
+                {{ pedido["cantidad"] }}
+
+            </p>
+
+
+            <p>
+
+                <b>
+                    Total:
+                </b>
+
+                ${{ "%.2f"|format(pedido["total"]) }}
+
+            </p>
+
+
+
+            {% if pedido["confirmado"] == 1 %}
+
+
+                <br>
+
+
+                <h3 class="confirmado">
+                    Pedido confirmado
+                </h3>
+
+
+                <br>
+
+
+                <p>
+                    Tu pedido ha sido confirmado.
+                </p>
+
+
+                <br>
+
+
+                <a
+                    href="{{ url_for(
+                        'factura',
+                        numero=pedido['numero'],
+                        origen='cliente'
+                    ) }}"
+                >
+
+                    <button type="button">
+                        Ver factura
+                    </button>
+
+                </a>
+
+
+            {% else %}
+
+
+                <br>
+
+
+                <h3 class="pendiente">
+                    Pedido pendiente
+                </h3>
+
+
+                <br>
+
+
+                <p>
+                    Estamos esperando la confirmación del dueño.
+                </p>
+
+
+            {% endif %}
+
+
+            <br><br>
+
+
+            <a href="{{ url_for('consulta') }}">
+
+                <button type="button">
+                    Consultar nuevamente
+                </button>
+
+            </a>
+
+
+        </div>
+
+
+    </main>
+
+
+
+    <footer>
+
+        <h3>
+            PEPINOS LOCOS
+        </h3>
+
+        <p>
+            Gracias por elegirnos.
+        </p>
+
+        <p class="copyright">
+            © 2026 Pepinos Locos
+        </p>
+
+    </footer>
+
 
 </body>
 
