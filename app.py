@@ -8,7 +8,7 @@ app.secret_key = "pepinos_locos_123"
 
 
 # ==========================================
-# BASE DE DATOS
+# CONEXIÓN A LA BASE DE DATOS
 # ==========================================
 
 def conectar():
@@ -16,6 +16,36 @@ def conectar():
     conexion.row_factory = sqlite3.Row
     return conexion
 
+
+# ==========================================
+# PREPARAR TELÉFONO
+# ==========================================
+
+def preparar_telefono(telefono):
+
+    if telefono is None:
+        return None
+
+    telefono = str(telefono).strip()
+
+    # Dejar solamente números
+    telefono = "".join(
+        caracter
+        for caracter in telefono
+        if caracter.isdigit()
+    )
+
+    # Debe tener exactamente 8 números
+    if len(telefono) != 8:
+        return None
+
+    # Agregar código de El Salvador
+    return "503" + telefono
+
+
+# ==========================================
+# CREAR BASE DE DATOS
+# ==========================================
 
 def crear_base_datos():
 
@@ -54,39 +84,15 @@ def crear_base_datos():
 
 
 # ==========================================
-# PREPARAR TELÉFONO
-# ==========================================
-
-def preparar_telefono(telefono):
-
-    if telefono is None:
-        return None
-
-    telefono = str(telefono).strip()
-
-    # Quitar todo lo que no sea número
-    telefono = "".join(
-        caracter
-        for caracter in telefono
-        if caracter.isdigit()
-    )
-
-    # Aceptar EXACTAMENTE 8 números
-    if len(telefono) != 8:
-        return None
-
-    # Agregar código de El Salvador
-    return "503" + telefono
-
-
-# ==========================================
 # INICIO
 # ==========================================
 
 @app.route("/")
 def inicio():
 
-    return render_template("inicio.html")
+    return render_template(
+        "inicio.html"
+    )
 
 
 # ==========================================
@@ -96,7 +102,9 @@ def inicio():
 @app.route("/cliente")
 def menu_cliente():
 
-    return render_template("cliente.html")
+    return render_template(
+        "cliente.html"
+    )
 
 
 # ==========================================
@@ -125,7 +133,11 @@ def menu():
         telefono_original
     )
 
-    # Si el teléfono no tiene exactamente 8 números
+    print(
+        "TELEFONO PREPARADO:",
+        repr(telefono)
+    )
+
     if telefono is None:
 
         return render_template(
@@ -133,7 +145,6 @@ def menu():
             error="Debes escribir exactamente 8 números. Ejemplo: 78451234."
         )
 
-    # Si está correcto, pasar al menú
     return render_template(
         "index.html",
         nombre=nombre,
@@ -153,7 +164,7 @@ def pedido():
         ""
     ).strip()
 
-    telefono_original = request.form.get(
+    telefono = request.form.get(
         "telefono",
         ""
     ).strip()
@@ -161,53 +172,94 @@ def pedido():
     producto = request.form.get(
         "producto",
         ""
-    )
+    ).strip()
 
     try:
 
         cantidad = int(
             request.form.get(
                 "cantidad",
-                1
+                "1"
             )
         )
 
-    except (ValueError, TypeError):
+    except ValueError:
 
         cantidad = 1
 
-    telefono = preparar_telefono(
-        telefono_original
-    )
 
-    if telefono is None:
+    print("================================")
+    print("PEDIDO RECIBIDO")
+    print("NOMBRE:", nombre)
+    print("TELEFONO:", telefono)
+    print("PRODUCTO:", producto)
+    print("CANTIDAD:", cantidad)
+    print("================================")
 
-        return render_template(
-            "cliente.html",
-            error="Debes escribir exactamente 8 números. Ejemplo: 78451234."
+
+    # ======================================
+    # COMPROBAR TELÉFONO
+    # ======================================
+
+    if telefono.startswith("503") and len(telefono) == 11:
+
+        telefono_final = telefono
+
+    else:
+
+        telefono_final = preparar_telefono(
+            telefono
         )
 
-    # ==========================================
-    # PRECIO
-    # ==========================================
+        if telefono_final is None:
+
+            return """
+            <h2>Error con el teléfono</h2>
+            <p>El teléfono recibido no es válido.</p>
+            <a href="/cliente">Volver</a>
+            """
+
+
+    # ======================================
+    # COMPROBAR PRODUCTO
+    # ======================================
 
     if producto == "Pepino Loco":
 
         precio = 0.50
 
-    else:
+    elif producto == "Pepino Loco con Gomitas":
 
         precio = 0.75
 
-    # ==========================================
-    # TOTAL
-    # ==========================================
+    else:
+
+        return """
+        <h2>Error</h2>
+        <p>Debes seleccionar un producto.</p>
+        <a href="/cliente">Volver</a>
+        """
+
+
+    # ======================================
+    # COMPROBAR CANTIDAD
+    # ======================================
+
+    if cantidad < 1:
+
+        cantidad = 1
+
+
+    # ======================================
+    # CALCULAR TOTAL
+    # ======================================
 
     total = cantidad * precio
 
-    # ==========================================
+
+    # ======================================
     # GUARDAR PEDIDO
-    # ==========================================
+    # ======================================
 
     conexion = conectar()
 
@@ -223,7 +275,7 @@ def pedido():
         VALUES (?, ?, ?, ?, ?)
     """, (
         nombre,
-        telefono,
+        telefono_final,
         producto,
         cantidad,
         total
@@ -234,15 +286,28 @@ def pedido():
     conexion.commit()
     conexion.close()
 
+
+    # ======================================
+    # INFORMACIÓN DEL PEDIDO
+    # ======================================
+
     pedido_nuevo = {
+
         "numero": numero,
+
         "nombre": nombre,
-        "telefono": telefono,
+
+        "telefono": telefono_final,
+
         "producto": producto,
+
         "cantidad": cantidad,
+
         "total": total,
+
         "confirmado": 0
     }
+
 
     return render_template(
         "pedido.html",
@@ -251,7 +316,7 @@ def pedido():
 
 
 # ==========================================
-# LOGIN
+# LOGIN DEL DUEÑO
 # ==========================================
 
 @app.route("/login", methods=["GET", "POST"])
@@ -269,7 +334,10 @@ def login():
             ""
         )
 
-        if usuario == "pepinos" and contraseña == "505":
+        if (
+            usuario == "pepinos"
+            and contraseña == "505"
+        ):
 
             session["dueño"] = True
 
@@ -288,7 +356,7 @@ def login():
 
 
 # ==========================================
-# ADMIN
+# PANEL DEL DUEÑO
 # ==========================================
 
 @app.route("/admin")
@@ -317,7 +385,7 @@ def admin():
 
 
 # ==========================================
-# CONFIRMAR
+# CONFIRMAR PEDIDO
 # ==========================================
 
 @app.route(
@@ -351,7 +419,7 @@ def confirmar(numero):
 
 
 # ==========================================
-# ELIMINAR
+# ELIMINAR PEDIDO
 # ==========================================
 
 @app.route(
@@ -411,6 +479,7 @@ def factura(numero):
 
         return "Pedido no encontrado"
 
+
     mensaje = (
         "PEPINOS LOCOS\n"
         "================================\n"
@@ -431,10 +500,12 @@ def factura(numero):
         "Esperamos que disfrutes tu pedido."
     )
 
+
     enlace_whatsapp = (
         f"https://wa.me/{pedido['telefono']}"
         f"?text={quote(mensaje)}"
     )
+
 
     return render_template(
         "factura.html",
@@ -473,11 +544,14 @@ def whatsapp(numero):
 
         return "Pedido no encontrado"
 
+
     telefono = pedido["telefono"]
+
 
     if not telefono:
 
         return "Este pedido no tiene teléfono guardado."
+
 
     mensaje = (
         "PEPINOS LOCOS\n"
@@ -499,10 +573,12 @@ def whatsapp(numero):
         "Esperamos que disfrutes tu pedido."
     )
 
+
     enlace_whatsapp = (
         f"https://wa.me/{telefono}"
         f"?text={quote(mensaje)}"
     )
+
 
     return redirect(
         enlace_whatsapp
@@ -510,7 +586,7 @@ def whatsapp(numero):
 
 
 # ==========================================
-# CONSULTA
+# CONSULTAR PEDIDO
 # ==========================================
 
 @app.route("/consulta")
@@ -520,10 +596,6 @@ def consulta():
         "consulta.html"
     )
 
-
-# ==========================================
-# CONSULTAR PEDIDO
-# ==========================================
 
 @app.route(
     "/consultar",
@@ -544,6 +616,7 @@ def consultar():
             error="Escribe un número de pedido válido."
         )
 
+
     conexion = conectar()
 
     pedido = conexion.execute("""
@@ -556,12 +629,14 @@ def consultar():
 
     conexion.close()
 
+
     if pedido is None:
 
         return render_template(
             "consulta.html",
             error="No encontramos ese pedido."
         )
+
 
     return render_template(
         "estado.html",
@@ -587,7 +662,7 @@ def logout():
 
 
 # ==========================================
-# INICIAR APLICACIÓN
+# INICIAR FLASK
 # ==========================================
 
 if __name__ == "__main__":
