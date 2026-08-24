@@ -68,6 +68,15 @@
             </p>
 
 
+            {% if error %}
+
+            <div class="mensaje-error">
+                {{ error }}
+            </div>
+
+            {% endif %}
+
+
             <form
                 action="{{ url_for('menu') }}"
                 method="POST"
@@ -105,15 +114,6 @@
                     Escribe solamente los 8 números de tu teléfono.
                     Ejemplo: 78451234
                 </small>
-
-
-                {% if error %}
-
-                    <p class="error">
-                        {{ error }}
-                    </p>
-
-                {% endif %}
 
 
                 <button type="submit">
