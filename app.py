@@ -26,6 +26,7 @@ def preparar_telefono(telefono):
     if not telefono:
         return None
 
+    # Quitar espacios
     telefono = telefono.strip()
 
     # Dejar solamente números
@@ -35,12 +36,8 @@ def preparar_telefono(telefono):
         if caracter.isdigit()
     )
 
-    # El cliente debe escribir exactamente 8 números
+    # DEBE TENER EXACTAMENTE 8 NÚMEROS
     if len(telefono) != 8:
-        return None
-
-    # Teléfonos móviles de El Salvador
-    if telefono[0] not in "6789":
         return None
 
     # Agregar código de país de El Salvador
@@ -76,6 +73,8 @@ def crear_base_datos():
         for columna in columnas
     ]
 
+    # Si la base de datos vieja no tiene teléfono,
+    # agregar la columna
     if "telefono" not in nombres_columnas:
 
         conexion.execute("""
@@ -123,12 +122,6 @@ def menu():
         "telefono",
         ""
     ).strip()
-
-    # Mostrar en los Logs de Render
-    print("================================")
-    print("TELEFONO RECIBIDO:", repr(telefono_original))
-    print("CANTIDAD DE CARACTERES:", len(telefono_original))
-    print("================================")
 
     # Preparar teléfono
     telefono = preparar_telefono(
@@ -199,7 +192,10 @@ def pedido():
             error="Debes escribir exactamente 8 números. Ejemplo: 78451234."
         )
 
-    # Precio
+    # ==========================================
+    # PRECIOS
+    # ==========================================
+
     if producto == "Pepino Loco":
 
         precio = 0.50
@@ -208,10 +204,16 @@ def pedido():
 
         precio = 0.75
 
-    # Calcular total
+    # ==========================================
+    # CALCULAR TOTAL
+    # ==========================================
+
     total = cantidad * precio
 
-    # Guardar pedido
+    # ==========================================
+    # GUARDAR PEDIDO
+    # ==========================================
+
     conexion = conectar()
 
     cursor = conexion.execute("""
@@ -237,7 +239,10 @@ def pedido():
     conexion.commit()
     conexion.close()
 
-    # Información del pedido
+    # ==========================================
+    # INFORMACIÓN DEL PEDIDO
+    # ==========================================
+
     pedido_nuevo = {
 
         "numero": numero,
@@ -459,7 +464,7 @@ def factura(numero):
 
 
 # ==========================================
-# WHATSAPP
+# ENVIAR FACTURA POR WHATSAPP
 # ==========================================
 
 @app.route("/whatsapp/<int:numero>")
