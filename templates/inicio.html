@@ -4,25 +4,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Pepinos Locos</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}?v=2">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='estilo.css') }}?v=3"
+    >
 </head>
+
 <body>
 
-    <h1>PEPINOS LOCOS</h1>
+    <!-- BARRA DE NAVEGACIÓN -->
 
-    <a href="{{ url_for('menu_cliente') }}">
-        <button type="button">
-            CLIENTE
-        </button>
-    </a>
+    <header class="barra">
 
-    <a href="{{ url_for('login') }}">
-        <button type="button">
-            ADMINISTRADOR
-        </button>
-    </a>
+        <div class="logo">
+            PEPINOS LOCOS
+        </div>
+
+        <nav>
+
+            <a href="{{ url_for('inicio') }}">
+                Inicio
+            </a>
+
+            <a href="{{ url_for('menu_cliente') }}">
+                Productos
+            </a>
+
+            <a href="{{ url_for('consulta') }}">
+                Consultar pedido
+            </a>
+
+            <a href="{{ url_for('login') }}">
+                Dueño
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- CONTENIDO PRINCIPAL -->
+
+    <main class="principal">
+
+        <div class="contenido-principal">
+
+            <p class="pequeno">
+                BIENVENIDO A
+            </p>
+
+            <h1>
+                PEPINOS
+                <span>LOCOS</span>
+            </h1>
+
+            <p class="descripcion">
+                Los pepinos más deliciosos y locos.
+                Elige tu favorito y realiza tu pedido.
+            </p>
+
+            <div class="botones-inicio">
+
+                <a
+                    href="{{ url_for('menu_cliente') }}"
+                    class="boton-principal"
+                >
+                    🥒 Comprar ahora
+                </a>
+
+                <a
+                    href="{{ url_for('consulta') }}"
+                    class="boton-secundario"
+                >
+                    Consultar pedido
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- TARJETA -->
+
+        <div class="tarjeta-pepino">
+
+            <div class="circulo-pepino">
+                🥒
+            </div>
+
+            <h2>
+                ¡Qué rico!
+            </h2>
+
+            <p>
+                Pepinos preparados con mucho sabor.
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <!-- PRODUCTOS -->
+
+    <section class="seccion-productos">
+
+        <h2>
+            Nuestros productos
+        </h2>
+
+        <div class="tarjetas-productos">
+
+            <div class="tarjeta-producto">
+
+                <div class="imagen-producto">
+
+                    <img
+                        src="{{ url_for('static', filename='pepino-loco.jpg') }}"
+                        alt="Pepino Loco"
+                    >
+
+                </div>
+
+                <h3>
+                    Pepino Loco
+                </h3>
+
+                <p>
+                    Nuestro delicioso Pepino Loco.
+                </p>
+
+                <strong>
+                    $0.50
+                </strong>
+
+            </div>
+
+
+            <div class="tarjeta-producto">
+
+                <div class="imagen-producto">
+
+                    <img
+                        src="{{ url_for('static', filename='descargar (3).jpg') }}"
+                        alt="Pepino Loco con Gomitas"
+                    >
+
+                </div>
+
+                <h3>
+                    Pepino Loco con Gomitas
+                </h3>
+
+                <p>
+                    Pepino Loco acompañado de gomitas.
+                </p>
+
+                <strong>
+                    $0.75
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('menu_cliente') }}"
+            class="boton-principal"
+        >
+            Ver productos
+        </a>
+
+    </section>
+
+
+    <!-- PIE DE PÁGINA -->
+
+    <footer>
+
+        <h3>
+            PEPINOS LOCOS
+        </h3>
+
+        <p>
+            Gracias por elegirnos.
+        </p>
+
+        <p class="copyright">
+            © 2026 Pepinos Locos
+        </p>
+
+    </footer>
 
 </body>
 
