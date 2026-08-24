@@ -2,85 +2,217 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pepinos Locos</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Productos - Pepinos Locos</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='estilo.css') }}"
+    >
+
 </head>
 
 <body>
 
-    <h1>PEPINOS LOCOS</h1>
+    <header class="barra">
 
-    <h2>Hola {{ nombre }}</h2>
+        <div class="logo">
+            PEPINOS LOCOS
+        </div>
 
-    <h2>Haz tu pedido</h2>
+        <nav>
 
-    <form action="{{ url_for('pedido') }}" method="POST">
+            <a href="{{ url_for('inicio') }}">
+                Inicio
+            </a>
 
-        <input type="hidden" name="nombre" value="{{ nombre }}">
+            <a href="{{ url_for('menu_cliente') }}">
+                Productos
+            </a>
 
-        <div class="productos">
+            <a href="{{ url_for('consulta') }}">
+                Consultar pedido
+            </a>
 
-            <div class="producto">
+            <a href="{{ url_for('login') }}">
+                Dueño
+            </a>
 
-                <img src="{{ url_for('static', filename='descargar (3).jpg') }}">
+        </nav>
 
-                <h3>1. Pepino Loco</h3>
+    </header>
 
-                <p>$0.50</p>
+
+    <main class="contenido-pagina">
+
+        <div class="tarjeta-formulario">
+
+            <p class="pequeno">
+                MENÚ
+            </p>
+
+            <h1>
+                Elige tu Pepino Loco
+            </h1>
+
+            <p class="texto-formulario">
+                Hola, {{ nombre }}. Elige tu producto y la cantidad.
+            </p>
+
+
+            <!-- =====================================
+                 FORMULARIO DEL PEDIDO
+            ====================================== -->
+
+            <form
+                action="{{ url_for('pedido') }}"
+                method="POST"
+            >
+
+                <!-- NOMBRE -->
+                <input
+                    type="hidden"
+                    name="nombre"
+                    value="{{ nombre }}"
+                >
+
+
+                <!-- TELÉFONO -->
+                <input
+                    type="hidden"
+                    name="telefono"
+                    value="{{ telefono }}"
+                >
+
+
+                <!-- =================================
+                     PRODUCTO 1
+                ================================== -->
+
+                <div class="producto">
+
+                    <label>
+
+                        <input
+                            type="radio"
+                            name="producto"
+                            value="Pepino Loco"
+                            required
+                        >
+
+                        <strong>
+                            Pepino Loco
+                        </strong>
+
+                    </label>
+
+                    <p>
+                        $0.50
+                    </p>
+
+                    <img
+                        src="{{ url_for('static', filename='pepino-loco.jpg') }}"
+                        alt="Pepino Loco"
+                    >
+
+                </div>
+
+
+                <!-- =================================
+                     PRODUCTO 2
+                ================================== -->
+
+                <div class="producto">
+
+                    <label>
+
+                        <input
+                            type="radio"
+                            name="producto"
+                            value="Pepino Loco con Gomitas"
+                        >
+
+                        <strong>
+                            Pepino Loco con Gomitas
+                        </strong>
+
+                    </label>
+
+                    <p>
+                        $0.75
+                    </p>
+
+                    <img
+                        src="{{ url_for('static', filename='descargar (3).jpg') }}"
+                        alt="Pepino Loco con Gomitas"
+                    >
+
+                </div>
+
+
+                <!-- =================================
+                     CANTIDAD
+                ================================== -->
+
+                <label for="cantidad">
+                    Cantidad
+                </label>
 
                 <input
-                    type="radio"
-                    name="producto"
-                    value="Pepino Loco"
+                    type="number"
+                    id="cantidad"
+                    name="cantidad"
+                    min="1"
+                    value="1"
                     required
                 >
 
-                Elegir
 
-            </div>
+                <!-- =================================
+                     BOTÓN
+                ================================== -->
 
-            <div class="producto">
+                <button type="submit">
+                    Realizar pedido
+                </button>
 
-                <img src="{{ url_for('static', filename='pepino-loco.jpg') }}">
+            </form>
 
-                <h3>2. Pepino Loco con Gomitas</h3>
 
-                <p>$0.75</p>
-
-                <input
-                    type="radio"
-                    name="producto"
-                    value="Pepino Loco con Gomitas"
-                >
-
-                Elegir
-
-            </div>
+            <a
+                href="{{ url_for('menu_cliente') }}"
+                class="boton-secundario"
+            >
+                Volver
+            </a>
 
         </div>
 
-        <br>
+    </main>
 
-        <label>Cantidad:</label>
 
-        <input
-            type="number"
-            name="cantidad"
-            min="1"
-            value="1"
-            required
-        >
+    <footer>
 
-        <br><br>
+        <h3>
+            PEPINOS LOCOS
+        </h3>
 
-        <button type="submit">
-            Hacer pedido
-        </button>
+        <p>
+            Gracias por elegirnos.
+        </p>
 
-    </form>
+        <p class="copyright">
+            © 2026 Pepinos Locos
+        </p>
+
+    </footer>
 
 </body>
 
