@@ -26,7 +26,6 @@ def preparar_telefono(telefono):
     if not telefono:
         return None
 
-    # Quitar espacios
     telefono = telefono.strip()
 
     # Dejar solamente números
@@ -40,8 +39,7 @@ def preparar_telefono(telefono):
     if len(telefono) != 8:
         return None
 
-    # Los números móviles de El Salvador normalmente
-    # comienzan con 6, 7, 8 o 9
+    # Teléfonos móviles de El Salvador
     if telefono[0] not in "6789":
         return None
 
@@ -78,8 +76,6 @@ def crear_base_datos():
         for columna in columnas
     ]
 
-    # Si la base de datos vieja no tiene teléfono,
-    # agregar la columna
     if "telefono" not in nombres_columnas:
 
         conexion.execute("""
@@ -123,14 +119,16 @@ def menu():
         ""
     ).strip()
 
-    telefono_original = request.form.get("telefono", "")
+    telefono_original = request.form.get(
+        "telefono",
+        ""
+    ).strip()
 
-print("================================")
-print("TELEFONO RECIBIDO:", repr(telefono_original))
-print("CANTIDAD DE CARACTERES:", len(telefono_original))
-print("================================")
-
-telefono = preparar_telefono(telefono_original)
+    # Mostrar en los Logs de Render
+    print("================================")
+    print("TELEFONO RECIBIDO:", repr(telefono_original))
+    print("CANTIDAD DE CARACTERES:", len(telefono_original))
+    print("================================")
 
     # Preparar teléfono
     telefono = preparar_telefono(
@@ -239,7 +237,7 @@ def pedido():
     conexion.commit()
     conexion.close()
 
-    # Crear información del pedido
+    # Información del pedido
     pedido_nuevo = {
 
         "numero": numero,
@@ -461,7 +459,7 @@ def factura(numero):
 
 
 # ==========================================
-# ENVIAR FACTURA POR WHATSAPP
+# WHATSAPP
 # ==========================================
 
 @app.route("/whatsapp/<int:numero>")
